@@ -19,9 +19,21 @@ const Nouislider = forwardRef((props, ref) => {
   const sliderContainer = React.createRef();
 
   useEffect(() => {
-    if (ref && ref instanceof Function) {
-      ref(sliderContainer.current);
+    if (ref) {
+      if (ref instanceof Function) {
+        ref(sliderContainer.current);
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        ref.current = sliderContainer.current;
+      }
     }
+
+    return () => {
+      if (ref && !(ref instanceof Function)) {
+        // eslint-disable-next-line no-param-reassign
+        ref.current = null;
+      }
+    };
   }, [sliderContainer]);
 
   const clickOnPip = pip => {
