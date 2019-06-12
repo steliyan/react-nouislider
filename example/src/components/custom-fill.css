@@ -1,0 +1,8 @@
+.noUi-custom-filler {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+  background: #48b8af;
+  z-index: 0;
+}

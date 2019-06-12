@@ -1,13 +1,61 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Nouislider from 'nouislider-react';
 import 'nouislider/distribute/nouislider.css';
 
 import './examples.css';
 import './colorpicker.css';
 import './toggle.css';
+import './custom-fill.css';
 
 const COLORS = ['red', 'green', 'blue'];
 const colors = [0, 0, 0];
+
+const CustomFillerWithRef = () => {
+  const ref = React.useRef();
+  const fillerRef = React.useRef(document.createElement("div"));
+
+  useEffect(() => {
+    if (ref && ref.current) {
+      fillerRef.current.classList.add("noUi-custom-filler");
+      ref.current.appendChild(fillerRef.current);
+    }
+
+    return () => {
+      if (ref && ref.current) {
+        ref.current.removeChild(fillerRef.current);
+      }
+    };
+  }, [ref, fillerRef]);
+
+  return (
+    <Nouislider
+      ref={ref}
+      start={[2]}
+      range={{
+        min: [0],
+        max: [5]
+      }}
+      step={1}
+      onUpdate={values => {
+        const { current: filler } = fillerRef;
+        const value = parseInt(values[0], 10);
+
+        filler.style.width = value === 0 || value === 5 ? "12.5%" : "25%";
+        filler.style.marginLeft = value === 0 ? 0 : "-12.5%";
+        filler.style.left = `${(value / 5) * 100}%`;
+      }}
+      onChange={values => {
+        const { noUiSlider } = ref.current;
+        const value = parseInt(values[0], 10);
+        if (value === 0) {
+          noUiSlider.set(1);
+        } else if (value === 5) {
+          noUiSlider.set(4);
+        }
+      }}
+    />
+  );
+};
 
 class Examples extends React.Component {
   state = {
@@ -126,6 +174,10 @@ class Examples extends React.Component {
               max: 50,
             }}
           />
+        </div>
+        <div className="examples">
+          <h4>Using ref to build custom filler:</h4>
+          <CustomFillerWithRef />
         </div>
         <div className="examples">
           <h4>Non linear slider:</h4>
